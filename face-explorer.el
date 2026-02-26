@@ -1126,22 +1126,30 @@ Face information for the selected frame is used."
       (frame-parameter frame 'tty)))
 
 
-(defun face-explorer-display-number-of-colors (&optional display)
+(defun face-explorer-display-number-of-colors (&optional display term)
   "Number of colors supported by DISPLAY.
 
-In batch mode, try to estimate number of colors by inspecting the
-TERM environment variable.
+In batch mode, try to estimate number of colors by inspecting TERM, or,
+if not given, the TERM environment variable.
 
 DISPLAY can be a display name or a frame.  If DISPLAY is omitted
 or nil, it defaults to the selected frame's display."
   (let ((colors (display-color-cells display)))
-    (if (eq colors 0)
-        (let ((term (getenv "TERM")))
-          (if (and term
-                   (string-match "-256color$" term))
-              256
-            8))
-      colors)))
+    (if (not (eq colors 0))
+        colors
+      (let ((term (or term (getenv "TERM"))))
+        (if (not term)
+            8
+          (condition-case nil
+              (string-to-number
+               (car (process-lines "tput" "-T" term "colors")))
+            ((error)
+             (cond ((string-match "-direct$" term)
+                    16777216)
+                   ((string-match "-256color$" term)
+                    256)
+                   (t
+                    8)))))))))
 
 
 (defvar face-explorer-number-of-colors (face-explorer-display-number-of-colors)

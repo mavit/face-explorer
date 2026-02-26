@@ -130,6 +130,20 @@
                    lines))
     nil))
 
+(ert-deftest face-explorer-term-colors ()
+  (should (eql (face-explorer-display-number-of-colors nil "xterm")
+               8))
+  (should (eql (face-explorer-display-number-of-colors nil "kitty")
+               256))
+  (should (eql (face-explorer-display-number-of-colors nil "xterm-direct256")
+               16777216))
+  (should (eql (face-explorer-display-number-of-colors nil "fake")
+               8))
+  (should (eql (face-explorer-display-number-of-colors nil "fake-256color")
+               256))
+  (should (eql (face-explorer-display-number-of-colors nil "fake-direct")
+               16777216)))
+
 ;; ------------------------------------------------------------
 ;; Display matcher.
 ;;
