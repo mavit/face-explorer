@@ -508,6 +508,9 @@
 ;;   in light displays in 8 color mode.
 
 
+(require 'term/rxvt)
+
+
 (defgroup face-explorer nil
   "Library and tools for investigating faces."
   :group 'faces)
@@ -1156,6 +1159,9 @@ succeed.")
   "The background mode of FRAME."
   (or (and (face-explorer-real-frame-p frame)
            (frame-parameter frame 'background-mode))
+      (and (fboundp 'rxvt-colorfgbg-background-mode)
+           (not (string-blank-p (or (getenv "COLORFGBG") "")))
+           (rxvt-colorfgbg-background-mode (getenv "COLORFGBG")))
       'light))
 
 
