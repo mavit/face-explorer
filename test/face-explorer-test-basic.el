@@ -149,6 +149,24 @@
     (should (eql (face-explorer-display-number-of-colors nil "fake-direct")
                  16777216))))
 
+(ert-deftest face-explorer-frame-background-mode-via-colorfgbg ()
+  "Environment variable COLORFGBG indicates terminal background light/darkness."
+  (skip-unless (fboundp 'rxvt-colorfgbg-background-mode))
+  (let ((default 'light)
+        (orig-colorfgbg (getenv "COLORFGBG")))
+    (face-explorer-with-fictitious-display
+     (should (progn (setenv "COLORFGBG" nil)
+                    (eq (face-explorer-frame-background-mode) default)))
+     (should (progn (setenv "COLORFGBG" "")
+                    (eq (face-explorer-frame-background-mode) default)))
+     (should (progn (setenv "COLORFGBG" "garbage")
+                    (eq (face-explorer-frame-background-mode) default)))
+     (should (progn (setenv "COLORFGBG" "0;15")
+                    (eq (face-explorer-frame-background-mode) 'light)))
+     (should (progn (setenv "COLORFGBG" "15;0")
+                    (eq (face-explorer-frame-background-mode) 'dark))))
+    (setenv "COLORFGBG" orig-colorfgbg)))
+
 ;; ------------------------------------------------------------
 ;; Display matcher.
 ;;
