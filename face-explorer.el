@@ -1143,8 +1143,10 @@ DISPLAY is omitted or nil, it defaults to the selected frame's display."
         (if (string-blank-p (or term ""))
             8
           (condition-case nil
-              (string-to-number
-               (car (process-lines "tput" "-T" term "colors")))
+              (let ((tput-colors
+                     (string-to-number
+                      (car (process-lines "tput" "-T" term "colors")))))
+                (if (> tput-colors 0) tput-colors 0))
             ((error)
              (cond ((string-match "-direct$" term)
                     16777216)

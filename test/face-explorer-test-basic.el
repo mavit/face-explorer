@@ -132,6 +132,8 @@
 
 (ert-deftest face-explorer-term-colors ()
   (let ((default 8))
+    (should (eql (face-explorer-display-number-of-colors nil "dumb")
+                 0))
     (should (eql (face-explorer-display-number-of-colors nil "xterm")
                  8))
     (should (eql (face-explorer-display-number-of-colors nil "kitty")
